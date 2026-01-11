@@ -55,6 +55,7 @@ def get_db():
     finally:
         db.close()
 
+
 # This __name__ == "__main__" block is for manual testing/initial setup
 if __name__ == "__main__":
     print("Attempting to connect to MySQL database and create tables...")
