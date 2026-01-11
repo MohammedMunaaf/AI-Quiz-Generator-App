@@ -53,8 +53,36 @@ async def generate_quiz(request: QuizGenerateRequest, db: Session = Depends(get_
     """
     Generates a multiple-choice quiz from a given Wikipedia article URL.
     Scrapes the article, uses an LLM to create the quiz, and stores it in the database.
+    Includes caching: if quiz for URL exists, retrieve from DB.
     """
     try:
+        # --- CACHING LOGIC ---
+        # 1. Checking if the URL already exists in the database
+        requested_url_str = str(request.url)
+
+        existing_entry = db.query(Quiz).filter(Quiz.url == requested_url_str).first()
+
+        if existing_entry:
+            print(f"Found existing quiz for URL: {requested_url_str}. Retrieving from DB (ID: {existing_entry.id}).")
+            # If found, deserializing the stored JSON and preparing the FullQuizResponse
+            cached_llm_output = APILLMFullQuizOutput.model_validate_json(existing_entry.full_quiz_data)
+            return FullQuizResponse(
+                id=existing_entry.id,
+                url=existing_entry.url,
+                title=existing_entry.title,
+                summary=cached_llm_output.summary,
+                key_entities=cached_llm_output.key_entities,
+                sections=cached_llm_output.sections,
+                quiz=cached_llm_output.quiz,
+                related_topics=cached_llm_output.related_topics,
+                date_generated=existing_entry.date_generated
+            )
+        # --- CACHING LOGIC END ---
+
+        # If not found in cache, proceeding with scraping and generation
+        print(f"No existing quiz for URL: {requested_url_str}. Generating new quiz.")
+
+        
         # 1. Scrape Wikipedia article
         scraped_data = scrape_wikipedia(str(request.url))
         article_title = scraped_data["title"]
@@ -77,7 +105,7 @@ async def generate_quiz(request: QuizGenerateRequest, db: Session = Depends(get_
         # 3. Store in database
         # Serialize the LLM output (Pydantic object) to JSON string for storage
         db_quiz = Quiz(
-            url=str(request.url), # Convert HttpUrl to string
+            url=requested_url_str,
             title=llm_quiz_data.title,
             scraped_content=raw_html, # Store raw HTML or clean text for bonus
             full_quiz_data=llm_quiz_data.model_dump_json(indent=2), # Convert Pydantic model to JSON string
