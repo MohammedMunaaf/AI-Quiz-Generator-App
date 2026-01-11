@@ -84,10 +84,10 @@ function GenerateQuizTab() {
           <button
             onClick={handleGenerateQuiz}
             className="px-6 py-3 bg-gradient-to-r from-sky-400 to-violet-500 
-hover:from-sky-500 hover:to-violet-600 
-text-white font-semibold rounded-md shadow-sm 
-focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-2 
-dark:focus:ring-offset-gray-900 transition-colors duration-200 cursor-pointer"
+              hover:from-sky-500 hover:to-violet-600 
+              text-white font-semibold rounded-md shadow-sm 
+              focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-2 
+              dark:focus:ring-offset-gray-900 transition-colors duration-200 cursor-pointer"
             disabled={
               loading || !url.startsWith("https://en.wikipedia.org/wiki/")
             }
