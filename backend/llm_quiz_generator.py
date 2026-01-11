@@ -33,7 +33,7 @@ class LLMFullQuizOutput(BaseModel):
 
 # Initialize the Gemini LLM
 # Using gemini-pro for text generation tasks
-llm = ChatGoogleGenerativeAI(model="gemini-1.0-pro", google_api_key=GEMINI_API_KEY, temperature=0.7)
+llm = ChatGoogleGenerativeAI(model="gemini-pro", google_api_key=GEMINI_API_KEY, temperature=0.7)
 
 # Define the output parser based on our Pydantic schema
 parser = JsonOutputParser(pydantic_object=LLMFullQuizOutput)
