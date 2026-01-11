@@ -155,37 +155,6 @@ def get_single_quiz(quiz_id: int, db: Session = Depends(get_db)):
     )
     
 
-@app.get("/debug-llm-models")
-async def debug_llm_models():
-    """
-    Lists available Gemini models and their supported methods
-    from the perspective of the Render deployment.
-    """
-    gemini_api_key = os.getenv("GEMINI_API_KEY")
-    if not gemini_api_key:
-        raise HTTPException(status_code=500, detail="GEMINI_API_KEY not found in environment variables on Render.")
-    
-    try:
-        genai.configure(api_key=gemini_api_key)
-        
-        available_models = []
-        for m in genai.list_models():
-            # Check if generateContent is supported for chat models
-            if "generateContent" in m.supported_generation_methods:
-                available_models.append({
-                    "name": m.name,
-                    "supported_methods": list(m.supported_generation_methods)
-                })
-        
-        if not available_models:
-            return {"message": "No models found supporting 'generateContent' with this API key/region."}
-
-        return {"available_models": available_models}
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error listing models: {str(e)}")
-
-
 # Health check endpoint
 @app.get("/")
 async def root():
