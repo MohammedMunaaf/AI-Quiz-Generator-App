@@ -15,3 +15,4 @@ function LoadingSpinner({ isGenerateTab }) {
 }
 
 export default LoadingSpinner;
+
