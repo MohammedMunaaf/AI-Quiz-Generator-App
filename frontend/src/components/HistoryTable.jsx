@@ -91,3 +91,4 @@ function HistoryTable({ history, handleDetailsClick }) {
 }
 
 export default HistoryTable;
+
